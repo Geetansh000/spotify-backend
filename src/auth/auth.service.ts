@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto, LoginDto } from './dto/auth.dto';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
-import { User } from 'user/entities/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserService } from 'user/user.service';
+import { UserService } from 'src/user/user.service';
 import { UnauthorizedLoginError, ValidationErrors } from './enums/error.enum';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto, UserJWTDto } from './dto/jwt.dto';
@@ -12,12 +12,12 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { addMinutes } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
-import { ResourceDoesnotExistException } from 'shared/exceptions';
+import { ResourceDoesnotExistException } from 'src/shared/exceptions';
 import {
   RefreshTokenException,
   UnauthorizedLoginException,
 } from './exceptions';
-import { comparePasswords } from 'shared/helpers/password.helper';
+import { comparePasswords } from 'src/shared/helpers/password.helper';
 
 @Injectable()
 export class AuthService {
@@ -64,6 +64,7 @@ export class AuthService {
       email: user.email,
       ip,
     });
+    console.log('🚀 ~ AuthService ~ generateJwt ~ payload:', payload);
 
     return new TokenDto({
       accessToken: this.jwtService.sign(payload.toJSON(), {

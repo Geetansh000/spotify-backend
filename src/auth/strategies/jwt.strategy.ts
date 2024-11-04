@@ -1,13 +1,12 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserJWTDto } from 'auth/dto/jwt.dto';
-import { ValidationErrors } from 'auth/enums';
+import { UserJWTDto } from 'src/auth/dto/jwt.dto';
 import { plainToClass } from 'class-transformer';
 import { Request } from 'express';
 import { set } from 'lodash';
 import { ExtractJwt, Strategy as PassportJwtStrategy } from 'passport-jwt';
-import { User } from 'user/entities/user.entity';
-import { UserService } from 'user/user.service';
+import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 
 const EXCLUDED_URLS_FROM_MFA = [
   '/v1/auth/login/mfa-otp/verify',
