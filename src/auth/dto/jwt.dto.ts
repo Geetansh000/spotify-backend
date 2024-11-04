@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsBoolean, IsString } from 'class-validator';
-import { JSONDto } from 'shared/types/json-dto.type';
+import { JSONDto } from 'src/shared/types/json-dto.type';
 export class UserJWTDto extends JSONDto {
   uuid: string;
 

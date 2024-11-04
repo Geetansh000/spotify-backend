@@ -14,7 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from './database/database.source';
 import { AuthModule } from './auth/auth.module';
-import { JwtMiddleware } from 'common/middleware/jwt.middleware';
+import { JwtMiddleware } from 'src/common/middleware/jwt.middleware';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

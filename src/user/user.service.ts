@@ -3,9 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { LoginDto } from 'auth/dto/auth.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ResourceDoesnotExistException } from 'shared/exceptions';
+import { ResourceDoesnotExistException } from 'src/shared/exceptions';
 import { ValidationError } from './enums/error.enum';
 
 @Injectable()

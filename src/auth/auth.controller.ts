@@ -15,7 +15,7 @@ import { Request, Response } from 'express';
 import { RefreshTokenNotProvidedException } from './exceptions';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthUser } from './decorators/auth-user.decorator';
-import { User } from 'user/entities/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { TokenDto } from './dto/jwt.dto';
 import { RefreshTokenNotProvidedExceptionFilter } from './exceptions/filters/refresh-token-not-provided.exception-filter';
 import { RefreshTokenExceptionFilter } from './exceptions/filters/refresh-token.excption-filter';
@@ -114,7 +114,7 @@ export class AuthController {
     });
     return tokens;
   }
-  
+
   @AuthProtect()
   @Get()
   async findAll() {
