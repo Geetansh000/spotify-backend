@@ -2,7 +2,7 @@ import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { Exclude, Expose } from 'class-transformer';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
