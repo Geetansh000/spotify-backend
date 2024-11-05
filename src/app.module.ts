@@ -16,6 +16,8 @@ import { dataSourceOptions } from './database/database.source';
 import { AuthModule } from './auth/auth.module';
 import { JwtMiddleware } from 'src/common/middleware/jwt.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { AlbumModule } from './album/album.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { JwtModule } from '@nestjs/jwt';
       useFactory: async () => dataSourceOptions,
     }),
     AuthModule,
+    AlbumModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
