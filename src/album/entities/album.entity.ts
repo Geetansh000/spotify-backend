@@ -19,23 +19,25 @@ export class Album {
   @Column({ nullable: false })
   title: string;
 
-  @Column({ nullable: false })
+  @Column({ name: 'release_date', nullable: false })
   @Expose({ name: 'release_date' })
   releaseDate: Date;
 
   @Column({ nullable: false })
   duration: string;
 
-  @Column({ nullable: false })
+  @Column({ name: 'songs_count', nullable: false })
+  @Expose({ name: 'songs_count' })
   songsCount: number;
 
-  @Column({ nullable: false })
-  artist_uuid: string;
+  @Column({ name: 'artist_uuid', nullable: false })
+  @Expose({ name: 'artist_uuid' })
+  artistUuid: string;
 
-//   @Column({ nullable: false })
-//   songs_uuid: string[];
+  //   @Column({ nullable: false })
+  //   songs_uuid: string[];
 
-//   @OneToMany(() => Song)
-//   @JoinColumn({ name: 'songs_uuid' })
-//   songs: Song[];
+  //   @OneToMany(() => Song)
+  //   @JoinColumn({ name: 'songs_uuid' })
+  //   songs: Song[];
 }
