@@ -27,10 +27,12 @@ export class File {
   version: number;
 
   @Column({
+    name: 'content_type',
     type: 'enum',
     enum: ContentType,
     nullable: false,
   })
+  @Expose({ name: 'content_type' })
   contentType: ContentType;
 
   @Column({

@@ -1,14 +1,6 @@
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { Exclude, Expose } from 'class-transformer';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Album } from 'src/album/entities/album.entity';
 
 @Entity('songs')
@@ -22,7 +14,7 @@ export class Song {
   @Column({ nullable: false })
   title: string;
 
-  @Column({ nullable: false })
+  @Column({ name: 'release_date', nullable: false })
   @Expose({ name: 'release_date' })
   releaseDate: Date;
 
