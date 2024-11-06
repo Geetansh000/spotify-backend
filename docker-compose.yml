@@ -1,7 +1,9 @@
 version: '3.8'
+
 volumes:
   mysql_data:
     driver: local
+
 services:
   api:
     container_name: spotify-clone
@@ -18,6 +20,7 @@ services:
       - 8000:8000
     networks:
       - spotifynet
+
   db:
     container_name: spotify-db
     image: mysql:8.0.33
@@ -25,15 +28,16 @@ services:
       - SYS_NICE
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: spotify
       MYSQL_USER: spotify
       MYSQL_PASSWORD: spotify
-    # volumes:
-    #   - mysql_data:/var/lib/mysql
+    volumes:
+      - mysql_data:/var/lib/mysql  # Ensures persistence of MySQL data
     ports:
       - 3307:3306
     networks:
       - spotifynet
+
 networks:
   spotifynet: {}

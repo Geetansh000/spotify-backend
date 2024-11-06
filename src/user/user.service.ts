@@ -1,11 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResourceDoesnotExistException } from 'src/shared/exceptions';
 import { ValidationError } from './enums/error.enum';
+import { hashPassword } from 'src/shared/helpers/password.helper';
 
 @Injectable()
 export class UserService {
@@ -13,24 +17,27 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
+
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const salt = await bcrypt.genSalt();
-    createUserDto.password = await bcrypt.hash(createUserDto.password, salt);
-    const user = await this.userRepository.save(createUserDto);
-    delete user.password;
-    return user;
-  }
-
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  async findOne(data: Partial<User>): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email: data.email });
-    if (!user) {
-      throw new UnauthorizedException('Could not find error');
+    try {
+      const alreadyExists = await this.findOneByEmail(createUserDto.email);
+      if (alreadyExists) {
+        throw new ConflictException(ValidationError.USER_ALREADY_EXISTS);
+      }
+      createUserDto.password = await hashPassword(createUserDto.password);
+      const user = await this.userRepository.save(createUserDto);
+      return user;
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Error Occurred');
     }
-    return user;
+  }
+
+  findAll():Promise<User[]> {
+    return this.userRepository.find({});
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOneBy({ email: email });
   }
 
   async getByUUID(uuid: string, options?: FindOneOptions<User>): Promise<User> {

@@ -35,6 +35,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw err;
     }
 
+    delete user.password;
     return user;
   }
 }

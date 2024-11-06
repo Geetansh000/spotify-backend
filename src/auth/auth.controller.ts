@@ -76,7 +76,9 @@ export class AuthController {
           path: '/auth/access-token/refresh',
         });
       }
-
+      
+      delete user.password;
+      
       return {
         ...user,
         ...tokens.toJSON(),

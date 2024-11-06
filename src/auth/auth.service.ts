@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto, LoginDto } from './dto/auth.dto';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
@@ -10,7 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenDto, UserJWTDto } from './dto/jwt.dto';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
-import { addMinutes } from 'date-fns';
+import { addMinutes, compareAsc } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { ResourceDoesnotExistException } from 'src/shared/exceptions';
 import {
@@ -18,6 +24,7 @@ import {
   UnauthorizedLoginException,
 } from './exceptions';
 import { comparePasswords } from 'src/shared/helpers/password.helper';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -38,37 +45,38 @@ export class AuthService {
     }
     return { where, payload };
   }
-  async create(createUserDto: CreateUserDto) {
-    const user = await this.userService.createUser(createUserDto);
-    return user;
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    return await this.userService.createUser(createUserDto);
   }
+
   async loginUser(loginDto: LoginDto): Promise<{ accessToken: string }> {
-    const user = await this.userService.findOne(loginDto);
-    const passwordMatched = await bcrypt.compare(
-      loginDto.password,
-      user.password,
-    );
+    const user = await this.userService.findOneByEmail(loginDto.email);
+    if (!user) {
+      throw new NotFoundException(ValidationErrors.USER_NOT_FOUND);
+    }
+    const passwordMatched = await comparePasswords(loginDto.password,user.password);
     if (!passwordMatched) {
       throw new UnauthorizedException(ValidationErrors.PASSWORD_DOES_NOT_MATCH);
     }
-    delete user.password;
+
     const payload = { email: user.email, sub: user.uuid };
     return { accessToken: this.jwtService.sign(payload) };
   }
 
   async generateJwt(user: User, jwtId: string, ip?: string): Promise<TokenDto> {
-    const expiresIn = process.env.JWT_EXPIRATION; // this.common.config.get<number>('jwt.expiresIn');
+    const expiresIn = process.env.JWT_EXPIRATION;
     const payload = new UserJWTDto({
       uuid: user.uuid,
       sub: user.uuid,
       email: user.email,
       ip,
     });
-    console.log('🚀 ~ AuthService ~ generateJwt ~ payload:', payload);
 
     return new TokenDto({
       accessToken: this.jwtService.sign(payload.toJSON(), {
         secret: process.env.JWT_SECRET,
+        expiresIn: process.env.JWT_ACCESS_EXPIRATION,
       }),
       tokenValidity: Number(expiresIn),
     });
