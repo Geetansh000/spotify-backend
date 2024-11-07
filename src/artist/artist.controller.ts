@@ -10,13 +10,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
-import { CreateArtistDto } from './dto/create-artist.dto';
-import { UpdateArtistDto } from './dto/update-artist.dto';
+import {
+  CreateArtistDto,
+  UpdateArtistDto,
+  DeactivateArtistDto,
+  ActivateArtistDto,
+} from './dto';
+
 import { AuthProtect } from 'src/auth/decorators/auth-protect.decorator';
-import { ArtistValidation } from './enums/validation.enum';
+import { ArtistValidation } from './enums';
 import { Artist } from './entities/artist.entity';
-import { ActivateArtistDto } from './dto/activate-artist.dto';
-import { DeactivateArtistDto } from './dto/deactivate-artist-dto';
+import { string } from 'joi';
 
 @Controller('artist')
 export class ArtistController {
@@ -37,17 +41,23 @@ export class ArtistController {
   }
 
   @AuthProtect()
-  @Post('activate')
-  activateArtist(@Req() req, @Body() activateDto: ActivateArtistDto) {
-    const id = req.user.uuid;
-    return this.artistService.activateArtist(id, activateDto);
+  @Post('/:artistUuid/activate')
+  activateArtist(
+    @Req() req,
+    @Param('artistUuid') artistUuid: string,
+    @Body() activateDto: ActivateArtistDto,
+  ) {
+    return this.artistService.activateArtist(artistUuid, activateDto);
   }
 
   @AuthProtect()
-  @Post('deactivate')
-  deactivateArtist(@Req() req, @Body() deactivateDto: DeactivateArtistDto) {
-    const id = req.user.uuid;
-    return this.artistService.deactivateArtist(id, deactivateDto);
+  @Post('/:artistUuid/deactivate')
+  deactivateArtist(
+    @Req() req,
+    @Param('artistUuid') artistUuid: string,
+    @Body() deactivateDto: DeactivateArtistDto,
+  ) {
+    return this.artistService.deactivateArtist(artistUuid, deactivateDto);
   }
 
   @Get()

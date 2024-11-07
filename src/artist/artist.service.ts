@@ -1,21 +1,17 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateArtistDto } from './dto/create-artist.dto';
-import { UpdateArtistDto } from './dto/update-artist.dto';
+
+import { CreateArtistDto,UpdateArtistDto,DeactivateArtistDto,ActivateArtistDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Artist } from './entities/artist.entity';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
-import { plainToInstance } from 'class-transformer';
-import { User } from 'src/user/entities/user.entity';
-import { ValidationError } from 'class-validator';
-import { ArtistValidation } from './enums/validation.enum';
-import { DeactivateArtistDto } from './dto/deactivate-artist-dto';
+import { ArtistValidation } from './enums';
 import { comparePasswords } from 'src/shared/helpers/password.helper';
-import { ActivateArtistDto } from './dto/activate-artist.dto';
 
 @Injectable()
 export class ArtistService {
@@ -31,6 +27,10 @@ export class ArtistService {
       throw new Error('User not found');
     }
 
+    const alreadyExist = this.artistRepository.findOneBy({ user : user});
+    if (alreadyExist) {
+      throw new ConflictException(ArtistValidation.ARTIST_ALREADY_EXIST)
+    }
     const artist = this.artistRepository.create({
       ...createArtistDto,
       user,
@@ -66,11 +66,11 @@ export class ArtistService {
   }
 
   async deactivateArtist(
-    id: string,
+    artistUuid: string,
     deactivateDto: DeactivateArtistDto,
   ): Promise<{ success: boolean; artist: Artist }> {
     const artist = await this.artistRepository.findOne({
-      where: { user: { uuid: id } },
+      where: { uuid : artistUuid },
       relations: ['user'],
     });
 
@@ -93,11 +93,11 @@ export class ArtistService {
   }
 
   async activateArtist(
-    id: string,
+    artistUuid: string,
     activateDto: ActivateArtistDto,
   ): Promise<{ success: boolean; artist: Artist }> {
     const artist = await this.artistRepository.findOne({
-      where: { user: { uuid: id } },
+      where: { uuid : artistUuid },
       relations: ['user'],
     });
 
